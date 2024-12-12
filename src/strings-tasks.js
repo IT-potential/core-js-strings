@@ -75,7 +75,7 @@ function concatenateStrings(value1, value2) {
  *   getFirstChar('') => ''
  */
 function getFirstChar(value) {
-  return typeof value === 'string' && value.length > 0 ? value[0] : '';
+  return value.charAt(0);
 }
 
 /**
@@ -105,7 +105,7 @@ function removeLeadingAndTrailingWhitespaces(value) {
  *   removeLeadingWhitespaces('\t\t\tHello, World! ') => 'Hello, World! '
  */
 function removeLeadingWhitespaces(value) {
-  return value.replace(/^\s+/, '');
+  return value.trimStart();
 }
 
 /**
@@ -120,7 +120,7 @@ function removeLeadingWhitespaces(value) {
  *   removeTrailingWhitespaces('\t\t\tHello, World! ') => '\t\t\tHello, World!'
  */
 function removeTrailingWhitespaces(value) {
-  return value.replace(/\s+$/, '');
+  return value.trimEnd();
 }
 
 /**
@@ -215,7 +215,7 @@ function sumOfCodes(str) {
  *   startsWith('Hello World', 'Hello') => true
  */
 function startsWith(str, substr) {
-  return str.indexOf(substr) === 0;
+  return str.startsWith(substr);
 }
 
 /**
@@ -230,7 +230,7 @@ function startsWith(str, substr) {
  *   endsWith('Hello World', 'Hello') => false
  */
 function endsWith(str, substr) {
-  return substr === str.slice(str.lastIndexOf(substr), str.len);
+  return str.endsWith(substr);
 }
 
 /**
