@@ -195,8 +195,10 @@ function removeLastOccurrences(str, value) {
  */
 function sumOfCodes(str) {
   let sum = 0;
-  for (let j = 0; j <= str.length; j += j) {
-    sum += str[j].charCodeAt(0); // Получаем код символа на позиции j и добавляем к сумме
+  if (typeof str === 'string') {
+    for (let j = 0; j < str.length; j += 1) {
+      sum += str.charCodeAt(j); // Получаем код символа на позиции j и добавляем к сумме
+    }
   }
   return sum;
 }
@@ -310,11 +312,11 @@ function containsSubstring(str, substring) {
  *   countVowels('XYZ') => 1
  */
 function countVowels(str) {
-  const vowels = ['a', 'e', 'i', 'o', 'u'];
+  const vowels = ['a', 'e', 'i', 'o', 'u', 'y'];
   let count = 0;
   [...str.toLowerCase()].forEach((lett) => {
     if (vowels.includes(lett)) {
-      count += count;
+      count += 1;
     }
   });
   return count;
@@ -396,10 +398,12 @@ function reverseWords(str) {
  */
 function invertCase(str) {
   const arr = [];
-  str.split(' ').forEach((w) => {
-    arr.push([...w].reverse().join(''));
+  str.split('').forEach((lett) => {
+    if (lett === lett.toUpperCase()) {
+      arr.push(lett.toLowerCase());
+    } else arr.push(lett.toUpperCase());
   });
-  return arr.join(' ');
+  return arr.join('');
 }
 
 /**
