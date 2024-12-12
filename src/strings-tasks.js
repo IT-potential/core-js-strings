@@ -41,7 +41,7 @@ function getStringLength(value) {
  *   isString(new String('test')) => true
  */
 function isString(value) {
-  if (typeof value === 'string') {
+  if (typeof value === 'string' || value instanceof String) {
     return true;
   }
   return false;
@@ -75,7 +75,7 @@ function concatenateStrings(value1, value2) {
  *   getFirstChar('') => ''
  */
 function getFirstChar(value) {
-  return value === 'string' ? value[0] : '';
+  return typeof value === 'string' && value.length > 0 ? value[0] : '';
 }
 
 /**
@@ -137,7 +137,10 @@ function removeTrailingWhitespaces(value) {
  *   repeatString('abc', -2) => ''
  */
 function repeatString(str, times) {
-  return str.repeat(times);
+  if (typeof str === 'string' && times > 0) {
+    return str.repeat(times);
+  }
+  return '';
 }
 
 /**
@@ -152,9 +155,12 @@ function repeatString(str, times) {
  *   removeFirstOccurrences('I like legends', 'end') => 'I like legs'.
  *   removeFirstOccurrences('ABABAB', 'BA') => 'ABAB'.
  */
-function removeFirstOccurrences(str, value) {
-  const subStr = str.match(`${value}`);
-  return subStr.replace(/r[0]/);
+function removeFirstOccurrences(str, target) {
+  const index = str.indexOf(target);
+  if (index === -1) {
+    return str; // If the target is not found, return the original string.
+  }
+  return str.slice(0, index) + str.slice(index + target.length);
 }
 
 /**
@@ -190,7 +196,7 @@ function removeLastOccurrences(str, value) {
 function sumOfCodes(str) {
   let sum = 0;
   for (let j = 0; j <= str.length; j += j) {
-    sum += j.charCodeAt();
+    sum += str[j].charCodeAt(0); // Получаем код символа на позиции j и добавляем к сумме
   }
   return sum;
 }
@@ -239,7 +245,9 @@ function endsWith(str, substr) {
  *   formatTime(0, 0) => "00:00"
  */
 function formatTime(minutes, seconds) {
-  return `${minutes} ${':'} ${seconds}`;
+  const formattedMinutes = minutes.toString().padStart(2, '0');
+  const formattedSeconds = seconds.toString().padStart(2, '0');
+  return `${formattedMinutes}:${formattedSeconds}`;
 }
 
 /**
@@ -284,7 +292,7 @@ function orderAlphabetically(str) {
  *   containsSubstring('12345', '34') => true
  */
 function containsSubstring(str, substring) {
-  return str.indexOf(substring) === 0;
+  return str.includes(substring);
 }
 
 /**
@@ -304,10 +312,10 @@ function containsSubstring(str, substring) {
 function countVowels(str) {
   const vowels = ['a', 'e', 'i', 'o', 'u'];
   let count = 0;
-  [...str].forEach((lett) => {
-    vowels.forEach((el) => {
-      if (lett === el) count += count;
-    });
+  [...str.toLowerCase()].forEach((lett) => {
+    if (vowels.includes(lett)) {
+      count += count;
+    }
   });
   return count;
 }
@@ -326,8 +334,11 @@ function countVowels(str) {
  *   isPalindrome('No lemon, no melon') => true
  */
 function isPalindrome(str) {
-  const newStr = [...str].reverse().join('');
-  return str === newStr;
+  const cleanStr = str
+    .toLowerCase() // Приводим к нижнему регистру
+    .replace(/[^a-z0-9]/g, ''); // Удаляем все символы, кроме букв и цифр
+  const reversedStr = [...cleanStr].reverse().join('');
+  return cleanStr === reversedStr;
 }
 
 /**
@@ -365,8 +376,11 @@ function findLongestWord(sentence) {
  *   reverseWords('Hello World') => 'olleH dlroW'
  *   reverseWords('The Quick Brown Fox') => 'ehT kciuQ nworB xoF'
  */
-function reverseWords(/* str */) {
-  throw new Error('Not implemented');
+function reverseWords(str) {
+  return str
+    .split(' ')
+    .map((word) => [...word].reverse().join(''))
+    .join(' ');
 }
 
 /**
@@ -481,18 +495,17 @@ function encodeToRot13(str) {
   // eslint-disable-next-line no-restricted-syntax
   for (const lett of str) {
     if (/[A-Z]/.test(lett)) {
-      const charCode =
-        lett.charCodeAt() + 13 <= 90
-          ? lett.charCodeAt() + 13
-          : Math.abs(lett.charCodeAt() + 13 - 26);
-      res += String.fromCharCode(charCode);
-    } else if (/[a-z]/.test(str)) {
-      const charCode =
-        lett.charCodeAt() >= 97 && lett.charCodeAt() + 13 <= 122
-          ? lett.charCodeAt() + 13
-          : Math.abs(lett.charCodeAt() + 13 - 26);
-      res += String.fromCharCode(charCode);
+      // Для заглавных букв
+      const charCode = lett.charCodeAt();
+      const newCharCode = ((charCode - 65 + 13) % 26) + 65; // 65 - это код 'A'
+      res += String.fromCharCode(newCharCode);
+    } else if (/[a-z]/.test(lett)) {
+      // Для строчных букв
+      const charCode = lett.charCodeAt();
+      const newCharCode = ((charCode - 97 + 13) % 26) + 97; // 97 - это код 'a'
+      res += String.fromCharCode(newCharCode);
     } else {
+      // Для других символов (например, пробелов, знаков препинания)
       res += lett;
     }
   }
